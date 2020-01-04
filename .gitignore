@@ -11,3 +11,5 @@
 
 
 .idea/
+docker-compose.yml
+docker/
