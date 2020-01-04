@@ -5,8 +5,10 @@ namespace App\Services;
 
 
 use FOS\RestBundle\View\View;
+use Symfony\Component\Form\FormErrorIterator;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\ConstraintViolationList;
 
 class REST
 {
@@ -34,17 +36,19 @@ class REST
     }
 
     /**
-     * @param ConstraintViolationList $violation
+     * @param FormErrorIterator $errorIterator
      * @return View
      */
-    public static function errorValidation(ConstraintViolationList $violation): View
+    public static function errorForm(FormErrorIterator $errorIterator): View
     {
         $errors = [];
-        foreach ($violation as $error) {
-            $errors[$error->getPropertyPath()] = $error->getMessage();
+
+
+        foreach ($errorIterator as $error) {
+            $errors[] = $error->getMessage();
         }
 
-        return self::onError(null, $errors);
+        return self::onError('fail', $errors);
     }
 
     /**
@@ -59,6 +63,16 @@ class REST
             'errors' => $errors,
             'message' => $message
         ], $httpErrorCode);
+    }
+
+    public static function checkForm(FormInterface $form, Request $request): ?View
+    {
+        $form->submit($request->request->all(), false);
+        if (!$form->isValid()) {
+            return REST::errorForm($form->getErrors(true, true));
+        }
+
+        return null;
     }
 
 }

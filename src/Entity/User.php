@@ -5,10 +5,16 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity(
+ *     fields={"email"},
+ *     message="This email is already used."
+ * )
  */
 class User implements UserInterface
 {
@@ -20,6 +26,8 @@ class User implements UserInterface
     private $id;
 
     /**
+     * @Assert\NotBlank
+     * @Assert\Email
      * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
@@ -30,13 +38,17 @@ class User implements UserInterface
     private $roles = [];
 
     /**
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *     min="8"
+     * )
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
     private $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Token", mappedBy="user", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Token", mappedBy="user", orphanRemoval=true, cascade={"persist"})
      */
     private $tokens;
 
@@ -69,7 +81,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -96,7 +108,7 @@ class User implements UserInterface
      */
     public function getPassword(): string
     {
-        return (string) $this->password;
+        return (string)$this->password;
     }
 
     public function setPassword(string $password): self
@@ -131,14 +143,14 @@ class User implements UserInterface
         return $this->tokens;
     }
 
-    public function addToken(Token $token): self
+    public function addToken(Token $token): string
     {
         if (!$this->tokens->contains($token)) {
             $this->tokens[] = $token;
             $token->setUser($this);
         }
 
-        return $this;
+        return $token;
     }
 
     public function removeToken(Token $token): self
