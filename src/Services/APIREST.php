@@ -49,12 +49,11 @@ class APIREST
     {
         $errors = [];
 
-
         foreach ($errorIterator as $error) {
             $errors[] = $error->getMessage();
         }
 
-        return self::onError('fail', $errors);
+        return self::onError($errors);
     }
 
     /**
@@ -63,11 +62,10 @@ class APIREST
      * @param int $httpErrorCode
      * @return View
      */
-    public static function onError($message = null, $errors = null, $httpErrorCode = Response::HTTP_BAD_REQUEST): View
+    public static function onError($messages, $httpErrorCode = Response::HTTP_BAD_REQUEST): View
     {
         return self::onSuccess([
-            'errors' => $errors,
-            'message' => $message
+            'messages' => $messages
         ], $httpErrorCode);
     }
 
