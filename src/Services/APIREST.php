@@ -10,18 +10,8 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class REST
+class APIREST
 {
-
-    /**
-     * @param $data
-     * @param int $httpErrorCode
-     * @return View
-     */
-    public static function onSuccess($data, int $httpErrorCode = Response::HTTP_OK): View
-    {
-        return View::create($data, $httpErrorCode);
-    }
 
     /**
      * @param $message
@@ -33,6 +23,22 @@ class REST
         return View::create([
             'message' => $message
         ], $httpErrorCode);
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param Request $request
+     * @return View|null
+     */
+    public static function checkForm(FormInterface $form, Request $request): ?View
+    {
+        $form->submit($request->request->all(), false);
+
+        if (!$form->isValid()) {
+            return APIREST::errorForm($form->getErrors(true, true));
+        }
+
+        return null;
     }
 
     /**
@@ -66,18 +72,13 @@ class REST
     }
 
     /**
-     * @param FormInterface $form
-     * @param Request $request
-     * @return View|null
+     * @param $data
+     * @param int $httpErrorCode
+     * @return View
      */
-    public static function checkForm(FormInterface $form, Request $request): ?View
+    public static function onSuccess($data, int $httpErrorCode = Response::HTTP_OK): View
     {
-        $form->submit($request->request->all(), false);
-        if (!$form->isValid()) {
-            return REST::errorForm($form->getErrors(true, true));
-        }
-
-        return null;
+        return View::create($data, $httpErrorCode);
     }
 
 }

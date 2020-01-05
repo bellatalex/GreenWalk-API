@@ -11,8 +11,10 @@ class Token
 {
     /**
      * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 
@@ -38,6 +40,11 @@ class Token
     private $user;
 
     /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    /**
      * Token constructor.
      */
     public function __construct()
@@ -45,17 +52,12 @@ class Token
         $this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
         $this->setIp($_SERVER['REMOTE_ADDR']);
         $this->setToken(md5(uniqid()));
+        $this->setCreatedAt(new \DateTime());
     }
 
     public function __toString(): string
     {
         return $this->getToken();
-    }
-
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getToken(): ?string
@@ -68,6 +70,11 @@ class Token
         $this->token = $token;
 
         return $this;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getUserAgent(): ?string
@@ -102,6 +109,18 @@ class Token
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }
