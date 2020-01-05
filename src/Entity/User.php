@@ -61,11 +61,21 @@ class User implements UserInterface
      */
     private $createdAt;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $activationDate;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $state;
+
     public function __construct()
     {
         $this->tokens = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
-
+        $this->setState(true);
     }
 
     public function getId(): ?string
@@ -185,6 +195,30 @@ class User implements UserInterface
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getActivationDate(): ?\DateTimeInterface
+    {
+        return $this->activationDate;
+    }
+
+    public function setActivationDate(?\DateTimeInterface $activationDate): self
+    {
+        $this->activationDate = $activationDate;
+
+        return $this;
+    }
+
+    public function getState(): ?bool
+    {
+        return $this->state;
+    }
+
+    public function setState(bool $state): self
+    {
+        $this->state = $state;
 
         return $this;
     }
