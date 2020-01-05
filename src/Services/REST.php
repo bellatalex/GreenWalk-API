@@ -65,6 +65,11 @@ class REST
         ], $httpErrorCode);
     }
 
+    /**
+     * @param FormInterface $form
+     * @param Request $request
+     * @return View|null
+     */
     public static function checkForm(FormInterface $form, Request $request): ?View
     {
         $form->submit($request->request->all(), false);
