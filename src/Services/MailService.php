@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Rental;
 use Swift_Attachment;
 use Swift_Mailer;
 use Swift_Message;
@@ -10,7 +9,7 @@ use Twig\Environment as Templating;
 
 class MailService
 {
-    private $eMotionMail = ['reservation.emotion@gmail.com' => 'eMotion'];
+    private $internalEmail = ['reservation.emotion@gmail.com' => 'GreenWalk'];
 
     /**
      * @var Swift_Mailer
@@ -23,6 +22,8 @@ class MailService
 
     /**
      * MailService constructor.
+     * @param Swift_Mailer $mailer
+     * @param Templating $templating
      */
     public function __construct(Swift_Mailer $mailer, Templating $templating)
     {
@@ -43,7 +44,7 @@ class MailService
         $body = $this->templating->render(
             'emails/accountActivation.html.twig',
             [
-
+                'code' => uniqid()
             ]
         );
 
@@ -63,9 +64,9 @@ class MailService
     public function prepareEmail(string $subject, array $to, string $body): Swift_Message
     {
         return (new Swift_Message())->setSubject($subject)
-            ->setFrom($this->eMotionMail)
+            ->setFrom($this->internalEmail)
             ->setTo($to)
-            ->setBcc($this->eMotionMail)
+            ->setBcc($this->internalEmail)
             ->setBody($body, 'text/html');
     }
 
