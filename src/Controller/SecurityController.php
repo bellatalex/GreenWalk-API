@@ -87,6 +87,10 @@ class SecurityController extends AbstractFOSRestController
             return APIREST::onError('bad credential', Response::HTTP_UNAUTHORIZED);
         }
 
+        if (!$user->getState()) {
+            return APIREST::onError('You\'re account have been deactivated', Response::HTTP_FORBIDDEN);
+        }
+
         $token = $user->addToken(new Token());
         $entityManager->persist($user);
 
