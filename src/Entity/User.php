@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Services\UserActivationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -67,17 +66,11 @@ class User implements UserInterface
      */
     private $state;
 
-    /**
-     * @ORM\Column(type="json")
-     */
-    private $activation = [];
-
     public function __construct()
     {
         $this->tokens = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setState(true);
-        $this->setActivation(UserActivationService::initActivation());
     }
 
     public function getId(): ?string
@@ -209,18 +202,6 @@ class User implements UserInterface
     public function setState(bool $state): self
     {
         $this->state = $state;
-
-        return $this;
-    }
-
-    public function getActivation(): ?array
-    {
-        return $this->activation;
-    }
-
-    public function setActivation(array $activation): self
-    {
-        $this->activation = $activation;
 
         return $this;
     }
