@@ -13,7 +13,9 @@ class UserSignUpType extends AbstractType
     {
         $builder
             ->add('email')
-            ->add('password');
+            ->add('password')
+            ->add('firstname')
+            ->add('birthdate');
     }
 
     public function configureOptions(OptionsResolver $resolver)

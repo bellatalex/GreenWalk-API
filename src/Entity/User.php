@@ -52,7 +52,6 @@ class User implements UserInterface
      * @Assert\Length(
      *     min="8"
      * )
-     * @var string The hashed password
      * @ORM\Column(type="string")
      */
     private $password;
@@ -76,6 +75,17 @@ class User implements UserInterface
      * @SWG\Property(type="string")
      */
     private $salt;
+
+    /**
+     * @Assert\NotBlank
+     * @ORM\Column(type="string", length=50)
+     */
+    private $firstname;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $birthdate;
 
     public function __construct()
     {
@@ -213,6 +223,30 @@ class User implements UserInterface
     public function setState(bool $state): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(string $firstname): self
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getBirthdate(): ?\DateTimeInterface
+    {
+        return $this->birthdate;
+    }
+
+    public function setBirthdate(\DateTimeInterface $birthdate): self
+    {
+        $this->birthdate = $birthdate;
 
         return $this;
     }

@@ -33,18 +33,29 @@ class SecurityController extends AbstractFOSRestController
      * Return a token associated to the new user
      *
      * @SWG\Parameter(
-     *     name="email",
-     *     in="query",
-     *     type="string",
-     *     description="The user email"
+     *          name="body",
+     *          in="body",
+     *          required=true,
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="email",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="password",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="firstname",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="birthdate",
+     *                  type="string"
+     *              )
+     *          )
+     *     )
      * )
-     * @SWG\Parameter(
-     *     name="password",
-     *     in="query",
-     *     type="string",
-     *     description="The user password"
-     * )
-     *
      * @SWG\Response(
      *     response=200,
      *     description="Returns a token",
@@ -86,16 +97,20 @@ class SecurityController extends AbstractFOSRestController
      * Return a token associated to the user if provided credential are good
      *
      * @SWG\Parameter(
-     *     name="email",
-     *     in="query",
-     *     type="string",
-     *     description="The user email"
-     * )
-     * @SWG\Parameter(
-     *     name="password",
-     *     in="query",
-     *     type="string",
-     *     description="The user password"
+     *          name="body",
+     *          in="body",
+     *          required=true,
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="email",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="password",
+     *                  type="string"
+     *              )
+     *          )
+     *     )
      * )
      *
      * @SWG\Response(
