@@ -5,10 +5,12 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Swagger\Annotations as SWG;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -37,6 +39,10 @@ class User implements UserInterface
     private $email;
 
     /**
+     * @SWG\Property(
+     *     type="array",
+     *     @SWG\Items(type="string")
+     * )
      * @ORM\Column(type="json")
      */
     private $roles = [];
@@ -65,6 +71,11 @@ class User implements UserInterface
      * @ORM\Column(type="boolean")
      */
     private $state;
+
+    /**
+     * @SWG\Property(type="string")
+     */
+    private $salt;
 
     public function __construct()
     {
