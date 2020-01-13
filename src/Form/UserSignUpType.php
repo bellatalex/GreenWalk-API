@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,7 +16,10 @@ class UserSignUpType extends AbstractType
             ->add('email')
             ->add('password')
             ->add('firstname')
-            ->add('birthdate');
+            ->add('birthdate', DateType::class, [
+                'format' => 'yyyy-MM-dd',
+                'widget' => 'single_text',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
