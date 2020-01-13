@@ -83,8 +83,9 @@ class User implements UserInterface
     private $firstname;
 
     /**
-     * @ORM\Column(type="string"),
+     * @ORM\Column(type="date"),
      * @Assert\NotBlank,
+     * @Assert\Date
      */
     private $birthdate;
 
