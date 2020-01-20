@@ -12,6 +12,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * Class SecurityController
  * @package App\Controller
- * @Route("/auth")
+ * @Route("/auth", name="auth_")
  */
 class SecurityController extends AbstractFOSRestController
 {
@@ -166,5 +167,21 @@ class SecurityController extends AbstractFOSRestController
         $entityManager->flush();
 
         return APIREST::onSuccess(["token" => $token]);
+    }
+
+    /**
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return current user information",
+     * )
+     * @SWG\Tag(name="Security")
+     *
+     * @Rest\Get("/info", name="info")
+     * @Rest\View(serializerGroups={"user"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function info()
+    {
+        return APIREST::onSuccess([$this->getUser()]);
     }
 }

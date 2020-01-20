@@ -44,6 +44,7 @@ class User implements UserInterface
      *     @SWG\Items(type="string")
      * )
      * @ORM\Column(type="json")
+     * @Groups({"user"})
      */
     private $roles = [];
 
@@ -63,6 +64,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"user"})
      */
     private $createdAt;
 
@@ -79,6 +81,7 @@ class User implements UserInterface
     /**
      * @Assert\NotBlank
      * @ORM\Column(type="string", length=50)
+     * @Groups({"user"})
      */
     private $firstname;
 
@@ -86,6 +89,7 @@ class User implements UserInterface
      * @ORM\Column(type="date"),
      * @Assert\NotBlank,
      * @Assert\Date
+     * @Groups({"user"})
      */
     private $birthdate;
 
