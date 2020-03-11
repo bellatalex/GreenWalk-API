@@ -11,6 +11,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,11 +24,48 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * Class SecurityController
  * @package App\Controller
- * @Route("/auth")
+ * @Route("/auth", name="auth_")
  */
 class SecurityController extends AbstractFOSRestController
 {
     /**
+     *  Create an user account
+     *
+     * Return a token associated to the new user
+     *
+     * @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          required=true,
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="email",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="password",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="firstname",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="birthdate",
+     *                  type="string"
+     *              )
+     *          )
+     *     )
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns a token",
+     *     @SWG\Schema(type="string[]",
+     *         @SWG\Property(property="id", ref=@Model(type=Token::class))
+     *     )
+     * )
+     * @SWG\Tag(name="Security")
+     *
      * @Rest\Post("/signup", name="signup")
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
@@ -53,6 +93,36 @@ class SecurityController extends AbstractFOSRestController
     }
 
     /**
+     * Sign in
+     *
+     * Return a token associated to the user if provided credential are good
+     *
+     * @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          required=true,
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="email",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="password",
+     *                  type="string"
+     *              )
+     *          )
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns a token",
+     *     @SWG\Schema(type="string[]",
+     *         @SWG\Property(property="id", ref=@Model(type=Token::class))
+     *     )
+     * )
+     * @SWG\Tag(name="Security")
+     *
      * @Rest\Post("/signin", name="signin")
      * @param Request $request
      * @param UserRepository $userRepository
@@ -97,5 +167,21 @@ class SecurityController extends AbstractFOSRestController
         $entityManager->flush();
 
         return APIREST::onSuccess(["token" => $token]);
+    }
+
+    /**
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return current user information",
+     * )
+     * @SWG\Tag(name="Security")
+     *
+     * @Rest\Get("/info", name="info")
+     * @Rest\View(serializerGroups={"user"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function info()
+    {
+        return APIREST::onSuccess([$this->getUser()]);
     }
 }

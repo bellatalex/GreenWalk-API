@@ -5,16 +5,18 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Swagger\Annotations as SWG;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @UniqueEntity(
  *     fields={"email"},
- *     message="This email is already used."
+ *     message="Cette adresse mail est déjà utilisée."
  * )
  */
 class User implements UserInterface
@@ -37,7 +39,12 @@ class User implements UserInterface
     private $email;
 
     /**
+     * @SWG\Property(
+     *     type="array",
+     *     @SWG\Items(type="string")
+     * )
      * @ORM\Column(type="json")
+     * @Groups({"user"})
      */
     private $roles = [];
 
@@ -46,7 +53,6 @@ class User implements UserInterface
      * @Assert\Length(
      *     min="8"
      * )
-     * @var string The hashed password
      * @ORM\Column(type="string")
      */
     private $password;
@@ -58,6 +64,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"user"})
      */
     private $createdAt;
 
@@ -65,6 +72,26 @@ class User implements UserInterface
      * @ORM\Column(type="boolean")
      */
     private $state;
+
+    /**
+     * @SWG\Property(type="string")
+     */
+    private $salt;
+
+    /**
+     * @Assert\NotBlank
+     * @ORM\Column(type="string", length=50)
+     * @Groups({"user"})
+     */
+    private $firstname;
+
+    /**
+     * @ORM\Column(type="date"),
+     * @Assert\NotBlank,
+     * @Assert\Date
+     * @Groups({"user"})
+     */
+    private $birthdate;
 
     public function __construct()
     {
@@ -202,6 +229,30 @@ class User implements UserInterface
     public function setState(bool $state): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(string $firstname): self
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getBirthdate(): ?\DateTimeInterface
+    {
+        return $this->birthdate;
+    }
+
+    public function setBirthdate(\DateTimeInterface $birthdate): self
+    {
+        $this->birthdate = $birthdate;
 
         return $this;
     }
