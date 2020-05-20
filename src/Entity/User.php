@@ -98,6 +98,7 @@ class User implements UserInterface
         $this->tokens = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setState(true);
+        $this->greenwalks = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -256,4 +257,5 @@ class User implements UserInterface
 
         return $this;
     }
+
 }
