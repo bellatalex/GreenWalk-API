@@ -93,6 +93,17 @@ class User implements UserInterface
      */
     private $birthdate;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Greenwalk", inversedBy="author")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $authorGreenwalk;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Greenwalk", inversedBy="participant")
+     */
+    private $registeredGreenwalk;
+
     public function __construct()
     {
         $this->tokens = new ArrayCollection();
@@ -253,6 +264,30 @@ class User implements UserInterface
     public function setBirthdate(\DateTimeInterface $birthdate): self
     {
         $this->birthdate = $birthdate;
+
+        return $this;
+    }
+
+    public function getAuthorGreenwalk(): ?Greenwalk
+    {
+        return $this->authorGreenwalk;
+    }
+
+    public function setAuthorGreenwalk(?Greenwalk $authorGreenwalk): self
+    {
+        $this->authorGreenwalk = $authorGreenwalk;
+
+        return $this;
+    }
+
+    public function getRegisteredGreenwalk(): ?Greenwalk
+    {
+        return $this->registeredGreenwalk;
+    }
+
+    public function setRegisteredGreenwalk(?Greenwalk $registeredGreenwalk): self
+    {
+        $this->registeredGreenwalk = $registeredGreenwalk;
 
         return $this;
     }
