@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GreenwalkRepository")
@@ -12,9 +13,10 @@ use Doctrine\ORM\Mapping as ORM;
 class Greenwalk
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
     private $id;
 
@@ -64,19 +66,22 @@ class Greenwalk
     private $state;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="greenwalk", orphanRemoval=true)
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $author;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="registeredGreenwalk")
+     * @ORM\ManyToMany(targetEntity="App\Entity\User")
      */
-    private $participant;
+    private $participants;
+
 
     public function __construct()
     {
-        $this->author = new ArrayCollection();
         $this->participant = new ArrayCollection();
+        $this->setState(true);
+        $this->participants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -192,33 +197,14 @@ class Greenwalk
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getAuthor(): Collection
+    public function getAuthor(): ?User
     {
         return $this->author;
     }
 
-    public function addAuthor(User $author): self
+    public function setAuthor(?User $author): self
     {
-        if (!$this->author->contains($author)) {
-            $this->author[] = $author;
-            $author->setGreenwalk($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAuthor(User $author): self
-    {
-        if ($this->author->contains($author)) {
-            $this->author->removeElement($author);
-            // set the owning side to null (unless already changed)
-            if ($author->getAuthorGreenwalk() === $this) {
-                $author->setAuthorGreenwalk(null);
-            }
-        }
+        $this->author = $author;
 
         return $this;
     }
@@ -226,16 +212,15 @@ class Greenwalk
     /**
      * @return Collection|User[]
      */
-    public function getParticipant(): Collection
+    public function getParticipants(): Collection
     {
-        return $this->participant;
+        return $this->participants;
     }
 
     public function addParticipant(User $participant): self
     {
-        if (!$this->participant->contains($participant)) {
-            $this->participant[] = $participant;
-            $participant->setRegisteredGreenwalk($this);
+        if (!$this->participants->contains($participant)) {
+            $this->participants[] = $participant;
         }
 
         return $this;
@@ -243,12 +228,8 @@ class Greenwalk
 
     public function removeParticipant(User $participant): self
     {
-        if ($this->participant->contains($participant)) {
-            $this->participant->removeElement($participant);
-            // set the owning side to null (unless already changed)
-            if ($participant->getRegisteredGreenwalk() === $this) {
-                $participant->setRegisteredGreenwalk(null);
-            }
+        if ($this->participants->contains($participant)) {
+            $this->participants->removeElement($participant);
         }
 
         return $this;
