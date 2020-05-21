@@ -3,8 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Greenwalk;
-use Doctrine\DBAL\Types\DateType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,7 +14,10 @@ class AddGreenwalkType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('timedate')
+            ->add('timedate', DateTimeType::class, [
+                'format' => 'Y-m-d H:i:s',
+                'widget' => 'single_text',
+            ])
             ->add('longitude')
             ->add('latitude')
             ->add('city')

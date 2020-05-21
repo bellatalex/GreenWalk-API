@@ -14,6 +14,8 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Greenwalk;
+use App\Form\AddGreenwalkType;
 
 /**
  * Class GreenwalkController
@@ -27,7 +29,18 @@ class GreenwalkController extends AbstractFOSRestController
      */
     public function add (Request $request, EntityManagerInterface $entityManager)
     {
-        
-        return APIREST::onSuccess('testo');
+        $greenwalk = new Greenwalk();
+        $form = $this->createForm(AddGreenwalkType::class, $greenwalk);
+        $formError = APIREST::checkForm($form, $request);
+
+         if ($formError) {
+             return $formError;
+         }
+
+        $entityManager->persist($greenwalk);
+        $entityManager->flush();
+
+
+        return APIREST::onSuccess(['id' => $greenwalk->getId()]);
     }
 }
