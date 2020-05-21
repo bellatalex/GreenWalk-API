@@ -29,6 +29,8 @@ class GreenwalkController extends AbstractFOSRestController
      */
     public function add (Request $request, EntityManagerInterface $entityManager)
     {
+        dump(date('m/d/Y h:i:s', time()));
+
         $greenwalk = new Greenwalk();
         $form = $this->createForm(AddGreenwalkType::class, $greenwalk);
         $formError = APIREST::checkForm($form, $request);

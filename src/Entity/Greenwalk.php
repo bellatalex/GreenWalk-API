@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GreenwalkRepository")
@@ -27,26 +27,32 @@ class Greenwalk
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank
+     * @Assert\GreaterThan("+0 minutes", message="{{ value }} {{ compared_value }}")
      */
     private $timedate;
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\NotBlank
      */
     private $longitude;
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\NotBlank
      */
     private $latitude;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
      */
     private $city;
 
     /**
      * @ORM\Column(type="string", length=5)
+     * @Assert\NotBlank
      */
     private $zipcode;
 
@@ -57,17 +63,20 @@ class Greenwalk
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
      */
     private $street;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Assert\NotBlank
      */
     private $state;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotBlank
      */
     private $author;
 
@@ -84,7 +93,7 @@ class Greenwalk
         $this->participants = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }
