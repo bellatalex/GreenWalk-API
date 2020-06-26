@@ -15,21 +15,21 @@ docker-compose up -d
 ### Dépendances
 Installation des dépendances
 ```bash
-composer install
+docker exec greenwalk-api composer install
 ```
 
 ### Base de données
 - Créer la base de données
     ```
-    docker-compose exec greenwalk-api_web_1 php bin/console doctrine:database:create
+    docker exec greenwalk-api php bin/console doctrine:database:create
     ```
 
 - Créer les tables
     ```
-    docker-compose exec greenwalk-api_web_1 php bin/console doctrine:schema:update --force
+    docker exec greenwalk-api php bin/console doctrine:schema:update --force
     ```
 
 - Créer un jeu de données
     ```bash
-    docker-compose exec greenwalk-api_web_1 php bin/console doctrine:fixtures:load
+    docker exec greenwalk-api php bin/console doctrine:fixtures:load
     ```
