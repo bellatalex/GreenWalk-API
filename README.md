@@ -21,15 +21,15 @@ composer install
 ### Base de données
 - Créer la base de données
     ```
-    docker-compose exec web php bin/console doctrine:database:create
+    docker-compose exec greenwalk-api_web_1 php bin/console doctrine:database:create
     ```
 
 - Créer les tables
     ```
-    docker-compose exec web php bin/console doctrine:schema:update --force
+    docker-compose exec greenwalk-api_web_1 php bin/console doctrine:schema:update --force
     ```
 
 - Créer un jeu de données
     ```bash
-    docker-compose exec web php bin/console doctrine:fixtures:load
+    docker-compose exec greenwalk-api_web_1 php bin/console doctrine:fixtures:load
     ```
