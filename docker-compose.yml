@@ -1,0 +1,28 @@
+version: "3.5"
+
+services:
+  web:
+    container_name: greenwalk-api
+    image: webdevops/php-nginx:7.3
+    working_dir: /app
+    ports:
+      - 8080:80
+    depends_on:
+      - database
+    volumes:
+      - .:/app:cached
+    environment:
+      WEB_DOCUMENT_ROOT: /app/public
+      WEB_DOCUMENT_INDEX: index.php
+      PHP_DATE_TIMEZONE: "Europe/Paris"
+      PHP_DISPLAY_ERRORS: 1
+
+  database:
+    image: mysql:5.6
+    ports:
+      - 8084:3306
+    environment:
+      MYSQL_DATABASE: GreenWalk
+      MYSQL_ROOT_PASSWORD: root
+  composer:
+    image: composer
