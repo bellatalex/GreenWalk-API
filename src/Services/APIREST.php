@@ -59,7 +59,7 @@ class APIREST
             }
         }
 
-        return self::onError($errors);
+        return $errors ? self::onError($errors) : null;
     }
 
     /**

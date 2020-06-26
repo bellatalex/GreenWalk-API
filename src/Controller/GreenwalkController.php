@@ -24,7 +24,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class GreenwalkController extends AbstractFOSRestController
 {
     /**
-     * @Rest\Post("/", name="add")
+     * @Rest\Post("", name="add")
+     * @IsGranted("ROLE_USER")
      */
     public function add(Request $request, EntityManagerInterface $entityManager)
     {
@@ -36,18 +37,17 @@ class GreenwalkController extends AbstractFOSRestController
             return $formError;
         }
 
-
         $greenwalk->setAuthor($this->getUser());
 
         $entityManager->persist($greenwalk);
         $entityManager->flush();
-
 
         return APIREST::onSuccess(['id' => $greenwalk->getId()]);
     }
 
     /**
      * @Rest\Delete("/{id}", name="delete")
+     * @IsGranted("ROLE_USER")
      * @param Greenwalk $greenwalk
      * @param EntityManagerInterface $entityManager
      * @return View
@@ -62,6 +62,7 @@ class GreenwalkController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/{id}", name="getOne")
+     * @IsGranted("ROLE_USER")
      * @param Greenwalk $greenwalk
      * @return View
      */
@@ -71,7 +72,8 @@ class GreenwalkController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/", name="get")
+     * @Rest\Get("", name="get")
+     * @IsGranted("ROLE_USER")
      * @param GreenwalkRepository $greenwalkRepository
      * @return View
      */
@@ -80,8 +82,6 @@ class GreenwalkController extends AbstractFOSRestController
         $data = null;
         $form = $this->createForm(SearchGreenwalkType::class, $data);
         $form->submit($request->query, false);
-        dd($form->getData());
-
 
         return APIREST::onSuccess($greenwalkRepository->findBy(['state' => true]));
     }
