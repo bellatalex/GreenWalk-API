@@ -36,11 +36,11 @@ class GreenwalkFixture extends Fixture implements DependentFixtureInterface
             $greenwalk->setLongitude(rand(1886397, 3142969) / 1000000);
             $greenwalk->setCity($faker->city);
             $greenwalk->setDescription($faker->sentence(100));
-            $greenwalk->setZipcode($faker->postcode);
+            $greenwalk->setZipCode($faker->postcode);
             $greenwalk->setAuthor($faker->randomElement($users));
             $greenwalk->setStreet($faker->streetName);
             $greenwalk->setState($faker->boolean(60));
-            $greenwalk->setTimedate($faker->dateTimeBetween('now', '+2months'));
+            $greenwalk->setDatetime($faker->dateTimeBetween('now', '+2months'));
 
             for($y=0;$y < 2;$y++){
                 $greenwalk->addParticipant($faker->randomElement($users));

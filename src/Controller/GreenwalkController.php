@@ -36,6 +36,9 @@ class GreenwalkController extends AbstractFOSRestController
             return $formError;
         }
 
+
+        $greenwalk->setAuthor($this->getUser());
+
         $entityManager->persist($greenwalk);
         $entityManager->flush();
 

@@ -30,7 +30,7 @@ class Greenwalk
      * @Assert\NotBlank
      * @Assert\GreaterThan("+0 minutes", message="{{ value }} {{ compared_value }}")
      */
-    private $timedate;
+    private $datetime;
 
     /**
      * @ORM\Column(type="float")
@@ -54,7 +54,7 @@ class Greenwalk
      * @ORM\Column(type="string", length=5)
      * @Assert\NotBlank
      */
-    private $zipcode;
+    private $zipCode;
 
     /**
      * @ORM\Column(type="string", length=1000, nullable=true)
@@ -110,14 +110,14 @@ class Greenwalk
         return $this;
     }
 
-    public function getTimedate(): ?\DateTimeInterface
+    public function getDatetime(): ?\DateTimeInterface
     {
-        return $this->timedate;
+        return $this->datetime;
     }
 
-    public function setTimedate(\DateTimeInterface $timedate): self
+    public function setDatetime(\DateTimeInterface $datetime): self
     {
-        $this->timedate = $timedate;
+        $this->datetime = $datetime;
 
         return $this;
     }
@@ -158,14 +158,14 @@ class Greenwalk
         return $this;
     }
 
-    public function getZipcode(): ?string
+    public function getZipCode(): ?string
     {
-        return $this->zipcode;
+        return $this->zipCode;
     }
 
-    public function setZipcode(string $zipcode): self
+    public function setZipCode(string $zipCode): self
     {
-        $this->zipcode = $zipcode;
+        $this->zipCode = $zipCode;
 
         return $this;
     }

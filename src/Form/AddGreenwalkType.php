@@ -16,17 +16,16 @@ class AddGreenwalkType extends AbstractType
     {
         $builder
             ->add('name', TextType::class)
-            ->add('timedate', DateTimeType::class, [
+            ->add('datetime', DateTimeType::class, [
                 'format' => 'yyyy-MM-dd HH:mm:ss',
                 'widget' => 'single_text',
             ])
             ->add('longitude', NumberType::class)
             ->add('latitude', NumberType::class)
             ->add('city', TextType::class)
-            ->add('zipcode', TextType::class)
+            ->add('zipCode', TextType::class)
             ->add('description', TextType::class)
-            ->add('street', TextType::class)
-            ->add('author');
+            ->add('street', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
