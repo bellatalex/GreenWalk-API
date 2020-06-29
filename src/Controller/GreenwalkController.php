@@ -61,18 +61,6 @@ class GreenwalkController extends AbstractFOSRestController
         return APIREST::onSuccess([true]);
     }
 
-
-    /**
-     * @Rest\Get("/{id}", name="getOne")
-     * @IsGranted("ROLE_USER")
-     * @param Greenwalk $greenwalk
-     * @return View
-     */
-    public function getOne(Greenwalk $greenwalk)
-    {
-        return APIREST::onSuccess($greenwalk);
-    }
-
     /**
      * @Rest\Get("/{latitude}/{longitude}")
      * @Rest\View(serializerGroups={"greenWalk"})
@@ -118,5 +106,17 @@ class GreenwalkController extends AbstractFOSRestController
         $entityManager->flush();
 
         return APIREST::onSuccess([true]);
+    }
+
+    /**
+     * @Rest\Get("/{id}", name="getOne")
+     * @IsGranted("ROLE_USER")
+     * @Rest\View(serializerGroups={"greenWalk"})
+     * @param Greenwalk $greenwalk
+     * @return View
+     */
+    public function getOne(Greenwalk $greenwalk)
+    {
+        return APIREST::onSuccess($greenwalk);
     }
 }
