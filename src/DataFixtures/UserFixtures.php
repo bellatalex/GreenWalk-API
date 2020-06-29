@@ -42,7 +42,7 @@ class UserFixtures extends Fixture
         $admin = new User();
         $admin->setEmail('admin@mail.com');
         $admin->setBirthdate($faker->dateTime("2001-01-01"));
-        $admin->setFirstname($faker->firstName);
+        $admin->setFirstName($faker->firstName);
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setPassword($this->userPasswordEncoder->encodePassword($admin, self::PASSWORD));
 
@@ -58,7 +58,7 @@ class UserFixtures extends Fixture
             $user = new User();
             $user->setEmail($faker->safeEmail);
             $user->setBirthdate($faker->dateTime("now"));
-            $user->setFirstname($faker->firstName);
+            $user->setFirstName($faker->firstName);
             $user->setPassword($this->userPasswordEncoder->encodePassword($user, self::PASSWORD));
 
             $manager->persist($user);
