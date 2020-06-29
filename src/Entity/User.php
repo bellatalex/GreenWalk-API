@@ -81,7 +81,7 @@ class User implements UserInterface
     /**
      * @Assert\NotBlank
      * @ORM\Column(type="string", length=50)
-     * @Groups({"user"})
+     * @Groups({"user", "greenWalk"})
      */
     private $firstName;
 
@@ -261,7 +261,7 @@ class User implements UserInterface
 
     public function setBirthdate(\DateTimeInterface $birthdate): self
     {
-        $this->birthdate = $birthdate;
+        $this->birthDate = $birthdate;
 
         return $this;
     }

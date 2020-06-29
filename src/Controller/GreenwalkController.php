@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Greenwalk;
 use App\Form\AddGreenwalkType;
-use App\Form\SearchGreenwalkType;
 use App\Repository\GreenwalkRepository;
 use App\Services\APIREST;
 use Doctrine\ORM\EntityManagerInterface;
@@ -75,19 +74,16 @@ class GreenwalkController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("", name="get")
-     * @IsGranted("ROLE_USER")
-     * @param Request $request
+     * @Rest\Get("/{latitude}/{longitude}")
+     * @Rest\View(serializerGroups={"greenWalk"})
+     * @param float $latitude
+     * @param float $longitude
      * @param GreenwalkRepository $greenwalkRepository
      * @return View
      */
-    public function getAll(Request $request, GreenwalkRepository $greenwalkRepository)
+    public function getAll(float $latitude, float $longitude, GreenwalkRepository $greenwalkRepository)
     {
-        $data = null;
-        $form = $this->createForm(SearchGreenwalkType::class, $data);
-        $form->submit($request->query, false);
-
-        return APIREST::onSuccess($greenwalkRepository->findBy(['state' => true]));
+        return APIREST::onSuccess($greenwalkRepository->findAllByCoordinate($latitude, $longitude));
     }
 
 
@@ -97,7 +93,6 @@ class GreenwalkController extends AbstractFOSRestController
 
     /**
      * @Rest\Get("/{id}/{action}", name="registerUnregister")
-     * @IsGranted("ROLE_USER")
      * @param Greenwalk $greenwalk
      * @param Boolean $action
      * @param EntityManagerInterface $entityManager

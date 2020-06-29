@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GreenwalkRepository")
@@ -17,11 +18,13 @@ class Greenwalk
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
+     * @Groups({"greenWalk"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"greenWalk"})
      */
     private $name;
 
@@ -29,59 +32,69 @@ class Greenwalk
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank
      * @Assert\GreaterThan("+0 minutes", message="{{ value }} {{ compared_value }}")
+     * @Groups({"greenWalk"})
      */
     private $datetime;
 
     /**
      * @ORM\Column(type="float")
      * @Assert\NotBlank
+     * @Groups({"greenWalk"})
      */
     private $longitude;
 
     /**
      * @ORM\Column(type="float")
      * @Assert\NotBlank
+     * @Groups({"greenWalk"})
      */
     private $latitude;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
+     * @Groups({"greenWalk"})
      */
     private $city;
 
     /**
      * @ORM\Column(type="string", length=5)
      * @Assert\NotBlank
+     * @Groups({"greenWalk"})
      */
     private $zipCode;
 
     /**
      * @ORM\Column(type="string", length=1000, nullable=true)
+     * @Groups({"greenWalk"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
+     * @Groups({"greenWalk"})
      */
     private $street;
 
     /**
      * @ORM\Column(type="boolean")
      * @Assert\NotBlank
+     * @Groups({"greenWalk"})
      */
     private $state;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"greenWalk"})
      * @Assert\NotBlank
      */
     private $author;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="registeredGreenWalks")
+     * @Groups({"greenWalk"})
      */
     private $participants;
 
