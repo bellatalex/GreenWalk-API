@@ -28,6 +28,7 @@ class GreenwalkRepository extends ServiceEntityRepository
             POW(69.1 * (:longitude - longitude) * COS(latitude / 57.3), 2)
           ) AS distance
         FROM greenwalk g
+        WHERE g.`datetime` > CURDATE()
         ORDER BY distance
         ';
 
