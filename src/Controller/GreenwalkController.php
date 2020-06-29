@@ -26,6 +26,9 @@ class GreenwalkController extends AbstractFOSRestController
     /**
      * @Rest\Post("", name="add")
      * @IsGranted("ROLE_USER")
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return View
      */
     public function add(Request $request, EntityManagerInterface $entityManager)
     {
@@ -74,6 +77,7 @@ class GreenwalkController extends AbstractFOSRestController
     /**
      * @Rest\Get("", name="get")
      * @IsGranted("ROLE_USER")
+     * @param Request $request
      * @param GreenwalkRepository $greenwalkRepository
      * @return View
      */
@@ -101,6 +105,10 @@ class GreenwalkController extends AbstractFOSRestController
      */
     public function registerUser(Greenwalk $greenwalk, Boolean $action, EntityManagerInterface $entityManager)
     {
+        if($greenwalk->getDatetime() > date()){
+            return APIREST::onError('Cette GreenWalk est déjà passé');
+        }
+
         $user = $this->getUser();
 
         if ($action) {

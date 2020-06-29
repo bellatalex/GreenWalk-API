@@ -93,12 +93,18 @@ class User implements UserInterface
      */
     private $birthdate;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Greenwalk", mappedBy="participants")
+     */
+    private $registeredGreenWalks;
+
     public function __construct()
     {
         $this->tokens = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setState(true);
         $this->greenwalks = new ArrayCollection();
+        $this->registeredGreenWalks = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -236,14 +242,14 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getFirstname(): ?string
+    public function getFirstName(): ?string
     {
-        return $this->firstname;
+        return $this->firstName;
     }
 
-    public function setFirstname(string $firstname): self
+    public function setFirstName(string $firstName): self
     {
-        $this->firstname = $firstname;
+        $this->firstName = $firstName;
 
         return $this;
     }
@@ -256,6 +262,34 @@ class User implements UserInterface
     public function setBirthdate(\DateTimeInterface $birthdate): self
     {
         $this->birthdate = $birthdate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Greenwalk[]
+     */
+    public function getRegisteredGreenWalks(): Collection
+    {
+        return $this->registeredGreenWalks;
+    }
+
+    public function addRegisteredGreenWalk(Greenwalk $registeredGreenWalk): self
+    {
+        if (!$this->registeredGreenWalks->contains($registeredGreenWalk)) {
+            $this->registeredGreenWalks[] = $registeredGreenWalk;
+            $registeredGreenWalk->addParticipant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRegisteredGreenWalk(Greenwalk $registeredGreenWalk): self
+    {
+        if ($this->registeredGreenWalks->contains($registeredGreenWalk)) {
+            $this->registeredGreenWalks->removeElement($registeredGreenWalk);
+            $registeredGreenWalk->removeParticipant($this);
+        }
 
         return $this;
     }

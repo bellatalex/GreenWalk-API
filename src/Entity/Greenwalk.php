@@ -81,7 +81,7 @@ class Greenwalk
     private $author;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\User")
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="registeredGreenWalks")
      */
     private $participants;
 
