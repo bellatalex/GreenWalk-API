@@ -76,6 +76,7 @@ class GreenwalkController extends AbstractFOSRestController
     /**
      * @Rest\Get("/{latitude}/{longitude}")
      * @Rest\View(serializerGroups={"greenWalk"})
+     * @Groups({"user"})
      * @param float $latitude
      * @param float $longitude
      * @param GreenwalkRepository $greenwalkRepository
