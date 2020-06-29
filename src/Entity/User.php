@@ -35,6 +35,7 @@ class User implements UserInterface
      * @Assert\NotBlank
      * @Assert\Email
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"greenWalk"})
      */
     private $email;
 
