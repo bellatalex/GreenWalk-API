@@ -13,13 +13,13 @@ Run the following command to install the project containers :
 docker-compose up -d
 ```
 
-### Dépendances
+### Dependencies
 Installation of dependencies
 ```bash
 docker exec greenwalk-api composer install
 ```
 
-### Base de données
+### Database
 - Create database
     ```
     docker exec greenwalk-api php bin/console doctrine:database:create
