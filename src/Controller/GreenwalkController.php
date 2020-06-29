@@ -74,7 +74,7 @@ class GreenwalkController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/{latitude}/{longitude}")
+     * @Rest\Get("/coordinate/{latitude}/{longitude}")
      * @Rest\View(serializerGroups={"greenWalk"})
      * @IsGranted("ROLE_USER")
      * @param float $latitude
@@ -95,22 +95,23 @@ class GreenwalkController extends AbstractFOSRestController
     /**
      * @Rest\Get("/{id}/{action}", name="registerUnregister")
      * @param Greenwalk $greenwalk
-     * @param Boolean $action
+     * @param string $action
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    public function registerUser(Greenwalk $greenwalk, Boolean $action, EntityManagerInterface $entityManager)
+    public function registerUser(Greenwalk $greenwalk, string $action, EntityManagerInterface $entityManager)
     {
-        if($greenwalk->getDatetime() > date()){
+        if($greenwalk->getDatetime() < date('yyyy-MM-dd')){
             return APIREST::onError('Cette GreenWalk est déjà passé');
         }
 
         $user = $this->getUser();
 
-        if ($action) {
+        if ($action === "subscribe") {
             $greenwalk->addParticipant($user);
-            //Envoyer un mail au user pour l'informer qu'il est bien inscrit à la greenwalk
-        } else {
+        }
+            //Envoyer un mail au user pour l'informer qu'il est bien inscrit à la Greenwalk
+        if ($action === "unsubscribe") {
             $greenwalk->removeParticipant($user);
             //Envoie un mail pour informer à l'utilisateur qu'il s'est désinscrit
         }
