@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Greenwalk;
+use App\Entity\User;
 use App\Form\AddGreenwalkType;
 use App\Repository\GreenwalkRepository;
 use App\Services\APIREST;
@@ -22,6 +23,17 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class GreenwalkController extends AbstractFOSRestController
 {
+
+    /**
+     * @Rest\Get("/getGreenwalk")
+     * @Rest\View(serializerGroups={"greenWalk"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function getGreenwalksByUser(): View
+    {
+        return APIREST::onSuccess($this->getUser()->getRegisteredGreenWalks());
+    }
+
     /**
      * @Rest\Post("", name="add")
      * @IsGranted("ROLE_USER")
@@ -64,6 +76,7 @@ class GreenwalkController extends AbstractFOSRestController
     /**
      * @Rest\Get("/{latitude}/{longitude}")
      * @Rest\View(serializerGroups={"greenWalk"})
+     * @IsGranted("ROLE_USER")
      * @param float $latitude
      * @param float $longitude
      * @param GreenwalkRepository $greenwalkRepository
