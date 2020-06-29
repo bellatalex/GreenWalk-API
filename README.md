@@ -1,4 +1,5 @@
-
+# GreenWalk-API
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=bellatalex_GreenWalk-API)](https://sonarcloud.io/dashboard?id=bellatalex_GreenWalk-API)
 
 ### Git
 ```bash
@@ -7,29 +8,29 @@ git@github.com:bellatalex/GreenWalk-API.git
 
 ### Docker
 
-Lancez la commande suivante pour installer les conteneurs du projet : 
+Run the following command to install the project containers : 
 ```bash
 docker-compose up -d
 ```
 
 ### Dépendances
-Installation des dépendances
+Installation of dependencies
 ```bash
 docker exec greenwalk-api composer install
 ```
 
 ### Base de données
-- Créer la base de données
+- Create database
     ```
     docker exec greenwalk-api php bin/console doctrine:database:create
     ```
 
-- Créer les tables
+- Create table
     ```
     docker exec greenwalk-api php bin/console doctrine:schema:update --force
     ```
 
-- Créer un jeu de données
+- Create a dataset
     ```bash
     docker exec greenwalk-api php bin/console doctrine:fixtures:load
     ```
