@@ -83,7 +83,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=50)
      * @Groups({"user"})
      */
-    private $firstname;
+    private $firstName;
 
     /**
      * @ORM\Column(type="date"),
@@ -91,7 +91,7 @@ class User implements UserInterface
      * @Assert\Date
      * @Groups({"user"})
      */
-    private $birthdate;
+    private $birthDate;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Greenwalk", mappedBy="participants")
@@ -254,9 +254,9 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getBirthdate(): ?\DateTimeInterface
+    public function getBirthDate(): ?\DateTimeInterface
     {
-        return $this->birthdate;
+        return $this->birthDate;
     }
 
     public function setBirthdate(\DateTimeInterface $birthdate): self
