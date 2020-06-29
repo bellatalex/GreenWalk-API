@@ -50,7 +50,8 @@ class APIREST
         $errors = [];
 
         foreach ($form as $child) {
-            if (!($child->isSubmitted() && $child->isValid())) {
+            if (!$child->isSubmitted() || !$child->isValid()) {
+
                 $iterator = $child->getErrors(true, false);
 
                 foreach ($iterator as $error) {
