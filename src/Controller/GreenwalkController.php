@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\AddGreenwalkType;
 use App\Repository\GreenwalkRepository;
 use App\Services\APIREST;
+use App\Services\MailService;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -66,13 +67,30 @@ class GreenwalkController extends AbstractFOSRestController
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    public function delete(Greenwalk $greenwalk, EntityManagerInterface $entityManager, SecurityController $securityController)
+    public function delete(Greenwalk $greenwalk, EntityManagerInterface $entityManager, SecurityController $securityController, MailService $mailService, \Swift_Mailer $mailer)
     {
         if ($securityController->isGranted('ROLE_ADMIN') || $this->getUser() === $greenwalk->getAuthor()) {
+            $listAllUser = $greenwalk->getParticipants();
+            $allEmail = [];
+            foreach ($listAllUser as $user){
+                array_push($allEmail,$user->getEmail());
+            }
             $greenwalk->setState(false);
             $entityManager->persist($greenwalk);
             $entityManager->flush();
+
+            $content = [
+                'greenwalk' => $greenwalk->getName(),
+                'date' => $greenwalk->getDatetime()->format('Y-m-d'),
+                'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
+                'street' => $greenwalk->getStreet(),
+                'city' => $greenwalk->getCity(),
+                'zipcode' => $greenwalk->getZipCode()
+            ];
+            $mailService->mail('Annulation de GreenWalk',$allEmail,'emails/cancelRegisterGreenwalk.html.twig',$content,'cc');
+
             return APIREST::onSuccess(true);
+
         } else {
             return APIREST::onError('bad user to delete greenwalk');
         }
@@ -100,7 +118,7 @@ class GreenwalkController extends AbstractFOSRestController
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    public function registerUser(Greenwalk $greenwalk, string $action, EntityManagerInterface $entityManager, \Swift_Mailer $mailer)
+    public function registerUser(Greenwalk $greenwalk, string $action, EntityManagerInterface $entityManager, MailService $mailService,\Swift_Mailer $mailer)
     {
         if($greenwalk->getDatetime() < new \DateTime('now')){
             return APIREST::onError('This GreenWalk is not available anymore');
@@ -115,34 +133,30 @@ class GreenwalkController extends AbstractFOSRestController
         if ($action === "unsubscribe") {
             $greenwalk->removeParticipant($user);
             $template = 'emails/cancelRegisterGreenwalk.html.twig';
+            $title = 'Annulation de GreenWalk';
         } else {
             $greenwalk->addParticipant($user);
            $template = 'emails/validationRegisterGreenwalk.html.twig';
+           $title = 'Participation à une GreenWalk';
         }
 
+        $content = [
+            'greenwalk' => $greenwalk->getName(),
+            'date' => $greenwalk->getDatetime()->format('Y-m-d'),
+            'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
+            'street' => $greenwalk->getStreet(),
+            'city' => $greenwalk->getCity(),
+            'zipcode' => $greenwalk->getZipCode()
+        ];
         try {
-            $message = (new \Swift_Message('Annulation de Greenwalk'))
-                ->setFrom('greenwalk.communication@gmail.com')
-                ->setTo($user->getEmail())
-                ->setBody($this->renderView($template, [
-                    'greenwalk' => $greenwalk->getName(),
-                    'date' => $greenwalk->getDatetime()->format('Y-m-d'),
-                    'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
-                    'street' => $greenwalk->getStreet(),
-                    'city' => $greenwalk->getCity(),
-                    'zipcode' => $greenwalk->getZipCode()
-                ]),'text/html');
-
-            $mailer->send($message);
-
+            $mailService->mail( $title,$user->getEmail(),$template,$content);
             $entityManager->persist($greenwalk);
             $entityManager->flush();
 
             return APIREST::onSuccess(true);
-        } catch (\Exception $e) {
+        } catch (\Exception $e){
             return APIREST::onError($e->getMessage());
         }
-
     }
 
     /**

@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\UserSignUpType;
 use App\Repository\UserRepository;
 use App\Services\APIREST;
+use App\Services\MailService;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -72,7 +73,7 @@ class SecurityController extends AbstractFOSRestController
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    public function signUp(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager, \Swift_Mailer $mailer): View
+    public function signUp(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager, \Swift_Mailer $mailer, MailService $mailService): View
     {
         $user = new User();
         $form = $this->createForm(UserSignUpType::class, $user);
@@ -86,20 +87,10 @@ class SecurityController extends AbstractFOSRestController
 
         $token = $user->addToken(new Token());
 
+        $mailService->mail('Création d\'un compte',$user->getEmail(),'emails/accountActivation.html.twig');
+
         $entityManager->persist($user);
         $entityManager->flush();
-
-        try {
-            $message = (new \Swift_Message('Création d\'un compte'))
-                ->setFrom('greenwalk.communication@gmail.com')
-                ->setTo($user->getEmail())
-                ->setBody($this->renderView('emails/accountActivation.html.twig'),
-                    'text/html');
-
-            $mailer->send($message);
-        } catch (\Exception $e) {
-            var_dump($e->getMessage(), $e->getTraceAsString());
-        }
 
         return APIREST::onSuccess(['token' => (string)$token]);
     }
