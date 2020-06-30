@@ -26,6 +26,7 @@ class GreenwalkController extends AbstractFOSRestController
 {
 
     /**
+     * End point to provide a GreenWalk by a user
      * @Rest\Get("/getGreenwalk")
      * @Rest\View(serializerGroups={"greenWalk"})
      * @IsGranted("ROLE_USER")
@@ -36,6 +37,7 @@ class GreenwalkController extends AbstractFOSRestController
     }
 
     /**
+     * End point to add a new GreenWalk and set it parameters
      * @Rest\Post("", name="add")
      * @IsGranted("ROLE_USER")
      * @param Request $request
@@ -61,6 +63,7 @@ class GreenwalkController extends AbstractFOSRestController
     }
 
     /**
+     * End point to delete a Greenwalk and informed all it participant by mail
      * @Rest\Delete("/{id}", name="delete")
      * @IsGranted("ROLE_USER")
      * @param Greenwalk $greenwalk
@@ -97,6 +100,7 @@ class GreenwalkController extends AbstractFOSRestController
     }
 
     /**
+     * End point to get all GreenWalk by it geographic position
      * @Rest\Get("/coordinate/{latitude}/{longitude}")
      * @Rest\View(serializerGroups={"greenWalk"})
      * @IsGranted("ROLE_USER")
@@ -111,6 +115,7 @@ class GreenwalkController extends AbstractFOSRestController
     }
 
     /**
+     * End point to subscribe and unsubscribe a user in a GreenWalk, and informed him by mail about this action
      * @Rest\Get("/{id}/{action}", name="registerUnregister")
      * @IsGranted("ROLE_USER")
      * @param Greenwalk $greenwalk
@@ -160,6 +165,7 @@ class GreenwalkController extends AbstractFOSRestController
     }
 
     /**
+     * End point to get a GreenWalk by it ID
      * @Rest\Get("/{id}", name="getOne")
      * @IsGranted("ROLE_USER")
      * @Rest\View(serializerGroups={"greenWalk"})
