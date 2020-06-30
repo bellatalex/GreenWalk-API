@@ -34,3 +34,4 @@ docker exec greenwalk-api composer install
     ```bash
     docker exec greenwalk-api php bin/console doctrine:fixtures:load
     ```
+
