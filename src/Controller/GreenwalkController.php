@@ -72,7 +72,7 @@ class GreenwalkController extends AbstractFOSRestController
             $greenwalk->setState(false);
             $entityManager->persist($greenwalk);
             $entityManager->flush();
-            return APIREST::onSuccess([true]);
+            return APIREST::onSuccess(true);
         } else {
             return APIREST::onError('bad user to delete greenwalk');
         }
