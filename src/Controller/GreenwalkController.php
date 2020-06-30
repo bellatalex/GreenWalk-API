@@ -87,7 +87,10 @@ class GreenwalkController extends AbstractFOSRestController
                 'city' => $greenwalk->getCity(),
                 'zipcode' => $greenwalk->getZipCode()
             ];
-            $mailService->mail($entityManager, $greenwalk,$mailer,'Annulation de GreenWalk',$allEmail,'emails/cancelRegisterGreenwalk.html.twig',$content,'cc');
+            $mailService->mail('Annulation de GreenWalk',$allEmail,'emails/cancelRegisterGreenwalk.html.twig',$content,'cc');
+
+            $entityManager->persist($greenwalk);
+            $entityManager->flush();
 
             return APIREST::onSuccess([true]);
         } else {
@@ -147,7 +150,15 @@ class GreenwalkController extends AbstractFOSRestController
             'city' => $greenwalk->getCity(),
             'zipcode' => $greenwalk->getZipCode()
         ];
-        return $mailService->mail($entityManager, $greenwalk,$mailer,$title,$user->getEmail(),$template,$content);
+        try {
+            $mailService->mail( $title,$user->getEmail(),$template,$content);
+            $entityManager->persist($greenwalk);
+            $entityManager->flush();
+
+            return APIREST::onSuccess(true);
+        } catch (\Exception $e){
+            return APIREST::onError($e->getMessage());
+        }
     }
 
     /**

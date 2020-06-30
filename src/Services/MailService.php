@@ -3,19 +3,20 @@
 
 namespace App\Services;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Templating\EngineInterface;
 
 class MailService
 {
     private $templating;
+    private $mailer;
 
-    public function __construct(EngineInterface $templating)
+    public function __construct(EngineInterface $templating, \Swift_Mailer $mailer)
     {
         $this->templating = $templating;
+        $this->mailer = $mailer;
     }
 
-    function mail(EntityManagerInterface $entityManager, $object, \Swift_Mailer $mailer, $title, $to, $view, $content = 0, $ToOrCc = 'to')
+    function mail($title, $to, $view, $content = 0, $ToOrCc = 'to')
     {
         try {
             $message = (new \Swift_Message($title))
@@ -26,20 +27,16 @@ class MailService
                 $message->setCc($to);
                 }
             if ($content != 0) {
-                dd('test');
                 $message->setBody($this->templating->render($view, $content), 'text/html');
             } else {
                 $message->setBody($this->templating->render($view), 'text/html');
             }
 
-            $mailer->send($message);
+            $this->mailer->send($message);
 
-            $entityManager->persist($object);
-            $entityManager->flush();
-
-            return APIREST::onSuccess(true);
+            return true;
         } catch (\Exception $e) {
-            return APIREST::onError($e->getMessage());
+            return false;
         }
     }
 }

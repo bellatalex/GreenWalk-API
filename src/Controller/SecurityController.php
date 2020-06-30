@@ -87,10 +87,10 @@ class SecurityController extends AbstractFOSRestController
 
         $token = $user->addToken(new Token());
 
+        $mailService->mail('Création d\'un compte',$user->getEmail(),'emails/accountActivation.html.twig');
+
         $entityManager->persist($user);
         $entityManager->flush();
-
-        $mailService->mail($entityManager,$user,$mailer,'Création d\'un compte',$user->getEmail(),'emails/accountActivation.html.twig');
 
         return APIREST::onSuccess(['token' => (string)$token]);
     }
