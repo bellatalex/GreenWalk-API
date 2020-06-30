@@ -72,7 +72,7 @@ class SecurityController extends AbstractFOSRestController
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    public function signUp(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager, \Swift_Mailer $mailer): View
+    public function signUp(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager): View
     {
         $user = new User();
         $form = $this->createForm(UserSignUpType::class, $user);
@@ -88,18 +88,6 @@ class SecurityController extends AbstractFOSRestController
 
         $entityManager->persist($user);
         $entityManager->flush();
-
-        try {
-            $message = (new \Swift_Message('Create Account'))
-                ->setFrom('greenwalk.communication@gmail.com')
-                ->setTo($user->getEmail())
-                ->setBody($this->renderView('emails/accountActivation.html.twig'),
-                    'text/html');
-
-            $mailer->send($message);
-        } catch (\Exception $e) {
-            var_dump($e->getMessage(), $e->getTraceAsString());
-        }
 
         return APIREST::onSuccess(['token' => (string)$token]);
     }
