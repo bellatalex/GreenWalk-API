@@ -35,6 +35,8 @@ class UserFixtures extends Fixture
         $manager->flush();
     }
 
+    // Generate an user who has the role Admin
+
     private function generateAdmin(ObjectManager $manager)
     {
         $faker = Factory::create('fr_FR');
@@ -49,6 +51,7 @@ class UserFixtures extends Fixture
         $manager->persist($admin);
     }
 
+    // Generate users
 
     private function generateUsers(ObjectManager $manager)
     {

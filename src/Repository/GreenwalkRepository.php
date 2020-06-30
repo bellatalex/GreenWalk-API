@@ -20,6 +20,8 @@ class GreenwalkRepository extends ServiceEntityRepository
         parent::__construct($registry, Greenwalk::class);
     }
 
+    // Find the location of the GreenWalk by coordinates
+
     public function findAllByCoordinate ($latitude, $longitude): array
     {
         $sql = '
