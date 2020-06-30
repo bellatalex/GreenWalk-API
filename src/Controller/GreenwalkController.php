@@ -100,7 +100,7 @@ class GreenwalkController extends AbstractFOSRestController
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    public function registerUser(Greenwalk $greenwalk, string $action, EntityManagerInterface $entityManager)
+    public function registerUser(Greenwalk $greenwalk, string $action, EntityManagerInterface $entityManager, \Swift_Mailer $mailer)
     {
         if($greenwalk->getDatetime() < new \DateTime('now')){
             return APIREST::onError('This GreenWalk is not available anymore');
@@ -110,8 +110,45 @@ class GreenwalkController extends AbstractFOSRestController
 
         if ($action === "unsubscribe") {
             $greenwalk->removeParticipant($user);
-        } else {
+            /* Envoie de mail dans le cas ou un utilisateur se désinscrit à une greenwalk */
+            try {
+                $message = (new \Swift_Message('Annulation de Greenwalk'))
+                    ->setFrom('greenwalk.communication@gmail.com')
+                    ->setTo($user->getEmail())
+                    ->setBody($this->renderView('emails/cancelRegisterGreenwalk.html.twig', [
+                        'greenwalk' => $greenwalk->getName(),
+                        'date' => $greenwalk->getDatetime()->format('Y-m-d'),
+                        'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
+                        'street' => $greenwalk->getStreet(),
+                        'city' => $greenwalk->getCity(),
+                        'zipcode' => $greenwalk->getZipCode()
+                    ]),'text/html');
+                $mailer->send($message);
+            } catch (\Exception $e) {
+                var_dump($e->getMessage(), $e->getTraceAsString());
+            }
+
+        } else if ($action === "subscribe"){
             $greenwalk->addParticipant($user);
+            /* Envoie de mail dans le cas ou un utilisateur s'inscrit à une greenwalk */
+            try {
+                $message = (new \Swift_Message('Participation à un GreenWalk'))
+                    ->setFrom('greenwalk.communication@gmail.com')
+                    ->setTo($user->getEmail())
+                    ->setBody($this->renderView('emails/validationRegisterGreenwalk.html.twig', [
+                        'greenwalk' => $greenwalk->getName(),
+                        'date' => $greenwalk->getDatetime()->format('Y-m-d'),
+                        'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
+                        'street' => $greenwalk->getStreet(),
+                        'city' => $greenwalk->getCity(),
+                        'zipcode' => $greenwalk->getZipCode()
+                    ]),
+                        'text/html');
+
+                $mailer->send($message);
+            } catch (\Exception $e) {
+                var_dump($e->getMessage(), $e->getTraceAsString());
+            }
         }
 
         $entityManager->persist($greenwalk);
