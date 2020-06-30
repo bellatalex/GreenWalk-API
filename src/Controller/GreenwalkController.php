@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\AddGreenwalkType;
 use App\Repository\GreenwalkRepository;
 use App\Services\APIREST;
+use App\Services\MailService;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -29,7 +30,6 @@ class GreenwalkController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"greenWalk"})
      * @IsGranted("ROLE_USER")
      */
-    /* End point to provide a GreenWalk by a user*/
     public function getGreenwalksByUser(): View
     {
         return APIREST::onSuccess($this->getUser()->getRegisteredGreenWalks());
@@ -42,7 +42,6 @@ class GreenwalkController extends AbstractFOSRestController
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    /* End point to add a new GreenWalk and set it parameters */
     public function add(Request $request, EntityManagerInterface $entityManager)
     {
         $greenwalk = new Greenwalk();
@@ -68,8 +67,7 @@ class GreenwalkController extends AbstractFOSRestController
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    /* End point to delete a Greenwalk and informed all it participant by mail */
-    public function delete(Greenwalk $greenwalk, EntityManagerInterface $entityManager, SecurityController $securityController, \Swift_Mailer $mailer)
+    public function delete(Greenwalk $greenwalk, EntityManagerInterface $entityManager, SecurityController $securityController, MailService $mailService, \Swift_Mailer $mailer)
     {
         if ($securityController->isGranted('ROLE_ADMIN') || $this->getUser() === $greenwalk->getAuthor()) {
             $listAllUser = $greenwalk->getParticipants();
@@ -81,29 +79,15 @@ class GreenwalkController extends AbstractFOSRestController
             $entityManager->persist($greenwalk);
             $entityManager->flush();
 
-
-             try {
-                $message = (new \Swift_Message('Annulation de Greenwalk'))
-                    ->setFrom('greenwalk.communication@gmail.com')
-                    ->setCc($allEmail)
-                    ->setBody($this->renderView('emails/cancelRegisterGreenwalk.html.twig', [
-                        'greenwalk' => $greenwalk->getName(),
-                        'date' => $greenwalk->getDatetime()->format('Y-m-d'),
-                        'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
-                        'street' => $greenwalk->getStreet(),
-                        'city' => $greenwalk->getCity(),
-                        'zipcode' => $greenwalk->getZipCode()
-                    ]),'text/html');
-
-                $mailer->send($message);
-
-                $entityManager->persist($greenwalk);
-                $entityManager->flush();
-
-                return APIREST::onSuccess(true);
-            } catch (\Exception $e) {
-                return APIREST::onError($e->getMessage());
-            }
+            $content = [
+                'greenwalk' => $greenwalk->getName(),
+                'date' => $greenwalk->getDatetime()->format('Y-m-d'),
+                'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
+                'street' => $greenwalk->getStreet(),
+                'city' => $greenwalk->getCity(),
+                'zipcode' => $greenwalk->getZipCode()
+            ];
+            $mailService->mail($entityManager, $greenwalk,$mailer,'Annulation de GreenWalk',$allEmail,'emails/cancelRegisterGreenwalk.html.twig',$content,'cc');
 
             return APIREST::onSuccess([true]);
         } else {
@@ -120,7 +104,6 @@ class GreenwalkController extends AbstractFOSRestController
      * @param GreenwalkRepository $greenwalkRepository
      * @return View
      */
-    /* End point to get all GreenWalk by it geographic position */
     public function getAll(float $latitude, float $longitude, GreenwalkRepository $greenwalkRepository)
     {
         return APIREST::onSuccess($greenwalkRepository->findAllByCoordinate($latitude, $longitude));
@@ -134,8 +117,7 @@ class GreenwalkController extends AbstractFOSRestController
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    /* End point to subscribe and unsubscribe a user in a GreenWalk, and informed him by mail about this action */
-    public function registerUser(Greenwalk $greenwalk, string $action, EntityManagerInterface $entityManager, \Swift_Mailer $mailer)
+    public function registerUser(Greenwalk $greenwalk, string $action, EntityManagerInterface $entityManager, MailService $mailService,\Swift_Mailer $mailer)
     {
         if($greenwalk->getDatetime() < new \DateTime('now')){
             return APIREST::onError('This GreenWalk is not available anymore');
@@ -150,34 +132,22 @@ class GreenwalkController extends AbstractFOSRestController
         if ($action === "unsubscribe") {
             $greenwalk->removeParticipant($user);
             $template = 'emails/cancelRegisterGreenwalk.html.twig';
+            $title = 'Annulation de GreenWalk';
         } else {
             $greenwalk->addParticipant($user);
            $template = 'emails/validationRegisterGreenwalk.html.twig';
+           $title = 'Participation à une GreenWalk';
         }
 
-        try {
-            $message = (new \Swift_Message('Annulation de Greenwalk'))
-                ->setFrom('greenwalk.communication@gmail.com')
-                ->setTo($user->getEmail())
-                ->setBody($this->renderView($template, [
-                    'greenwalk' => $greenwalk->getName(),
-                    'date' => $greenwalk->getDatetime()->format('Y-m-d'),
-                    'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
-                    'street' => $greenwalk->getStreet(),
-                    'city' => $greenwalk->getCity(),
-                    'zipcode' => $greenwalk->getZipCode()
-                ]),'text/html');
-
-            $mailer->send($message);
-
-            $entityManager->persist($greenwalk);
-            $entityManager->flush();
-
-            return APIREST::onSuccess(true);
-        } catch (\Exception $e) {
-            return APIREST::onError($e->getMessage());
-        }
-
+        $content = [
+            'greenwalk' => $greenwalk->getName(),
+            'date' => $greenwalk->getDatetime()->format('Y-m-d'),
+            'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
+            'street' => $greenwalk->getStreet(),
+            'city' => $greenwalk->getCity(),
+            'zipcode' => $greenwalk->getZipCode()
+        ];
+        return $mailService->mail($entityManager, $greenwalk,$mailer,$title,$user->getEmail(),$template,$content);
     }
 
     /**
@@ -187,7 +157,6 @@ class GreenwalkController extends AbstractFOSRestController
      * @param Greenwalk $greenwalk
      * @return View
      */
-    /* End point to get a GreenWalk by it ID */
     public function getOne(Greenwalk $greenwalk)
     {
         return APIREST::onSuccess($greenwalk);
