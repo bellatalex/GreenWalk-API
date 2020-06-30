@@ -74,7 +74,7 @@ class GreenwalkController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/{latitude}/{longitude}")
+     * @Rest\Get("/coordinate/{latitude}/{longitude}")
      * @Rest\View(serializerGroups={"greenWalk"})
      * @IsGranted("ROLE_USER")
      * @param float $latitude
@@ -87,38 +87,32 @@ class GreenwalkController extends AbstractFOSRestController
         return APIREST::onSuccess($greenwalkRepository->findAllByCoordinate($latitude, $longitude));
     }
 
-
-    //fonction qui inscrit l'utilisateur à une greenwalk / désinscrire l'utilisateur à une greenwalk
-    //fonction qui inscrit l'utilisateur à une greenwalk qui n'est pas encore passé. (historique de greenwalk)
-
-
     /**
      * @Rest\Get("/{id}/{action}", name="registerUnregister")
+     * @IsGranted("ROLE_USER")
      * @param Greenwalk $greenwalk
-     * @param Boolean $action
+     * @param string $action
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    public function registerUser(Greenwalk $greenwalk, Boolean $action, EntityManagerInterface $entityManager)
+    public function registerUser(Greenwalk $greenwalk, string $action, EntityManagerInterface $entityManager)
     {
-        if($greenwalk->getDatetime() > date()){
-            return APIREST::onError('Cette GreenWalk est déjà passé');
+        if($greenwalk->getDatetime() < new \DateTime('now')){
+            return APIREST::onError('This GreenWalk is not available anymore');
         }
 
         $user = $this->getUser();
 
-        if ($action) {
-            $greenwalk->addParticipant($user);
-            //Envoyer un mail au user pour l'informer qu'il est bien inscrit à la greenwalk
-        } else {
+        if ($action === "unsubscribe") {
             $greenwalk->removeParticipant($user);
-            //Envoie un mail pour informer à l'utilisateur qu'il s'est désinscrit
+        } else {
+            $greenwalk->addParticipant($user);
         }
 
         $entityManager->persist($greenwalk);
         $entityManager->flush();
 
-        return APIREST::onSuccess([true]);
+        return APIREST::onSuccess(true);
     }
 
     /**
