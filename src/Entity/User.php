@@ -35,6 +35,7 @@ class User implements UserInterface
      * @Assert\NotBlank
      * @Assert\Email
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"greenWalk"})
      */
     private $email;
 
@@ -81,9 +82,9 @@ class User implements UserInterface
     /**
      * @Assert\NotBlank
      * @ORM\Column(type="string", length=50)
-     * @Groups({"user"})
+     * @Groups({"user", "greenWalk"})
      */
-    private $firstname;
+    private $firstName;
 
     /**
      * @ORM\Column(type="date"),
@@ -91,13 +92,20 @@ class User implements UserInterface
      * @Assert\Date
      * @Groups({"user"})
      */
-    private $birthdate;
+    private $birthDate;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Greenwalk", mappedBy="participants")
+     */
+    private $registeredGreenWalks;
 
     public function __construct()
     {
         $this->tokens = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setState(true);
+        $this->greenwalks = new ArrayCollection();
+        $this->registeredGreenWalks = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -174,8 +182,10 @@ class User implements UserInterface
      */
     public function eraseCredentials()
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        /*
+            If you store any temporary, sensitive data on the user, clear it here
+            $this->plainPassword = null;
+        */
     }
 
     /**
@@ -233,27 +243,56 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getFirstname(): ?string
+    public function getFirstName(): ?string
     {
-        return $this->firstname;
+        return $this->firstName;
     }
 
-    public function setFirstname(string $firstname): self
+    public function setFirstName(string $firstName): self
     {
-        $this->firstname = $firstname;
+        $this->firstName = $firstName;
 
         return $this;
     }
 
-    public function getBirthdate(): ?\DateTimeInterface
+    public function getBirthDate(): ?\DateTimeInterface
     {
-        return $this->birthdate;
+        return $this->birthDate;
     }
 
     public function setBirthdate(\DateTimeInterface $birthdate): self
     {
-        $this->birthdate = $birthdate;
+        $this->birthDate = $birthdate;
 
         return $this;
     }
+
+    /**
+     * @return Collection|Greenwalk[]
+     */
+    public function getRegisteredGreenWalks(): Collection
+    {
+        return $this->registeredGreenWalks;
+    }
+
+    public function addRegisteredGreenWalk(Greenwalk $registeredGreenWalk): self
+    {
+        if (!$this->registeredGreenWalks->contains($registeredGreenWalk)) {
+            $this->registeredGreenWalks[] = $registeredGreenWalk;
+            $registeredGreenWalk->addParticipant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRegisteredGreenWalk(Greenwalk $registeredGreenWalk): self
+    {
+        if ($this->registeredGreenWalks->contains($registeredGreenWalk)) {
+            $this->registeredGreenWalks->removeElement($registeredGreenWalk);
+            $registeredGreenWalk->removeParticipant($this);
+        }
+
+        return $this;
+    }
+
 }

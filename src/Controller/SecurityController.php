@@ -182,6 +182,6 @@ class SecurityController extends AbstractFOSRestController
      */
     public function info()
     {
-        return APIREST::onSuccess([$this->getUser()]);
+        return APIREST::onSuccess($this->getUser());
     }
 }

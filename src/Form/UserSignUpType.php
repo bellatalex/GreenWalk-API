@@ -15,8 +15,8 @@ class UserSignUpType extends AbstractType
         $builder
             ->add('email')
             ->add('password')
-            ->add('firstname')
-            ->add('birthdate', DateType::class, [
+            ->add('firstName')
+            ->add('birthDate', DateType::class, [
                 'format' => 'yyyy-MM-dd',
                 'widget' => 'single_text',
             ]);
