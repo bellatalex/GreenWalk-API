@@ -106,55 +106,43 @@ class GreenwalkController extends AbstractFOSRestController
             return APIREST::onError('This GreenWalk is not available anymore');
         }
 
+        if(!in_array($action, ['subscribe', 'unsubscribe'])){
+            return APIREST::onError('You must choose an Action');
+        }
+
         $user = $this->getUser();
 
         if ($action === "unsubscribe") {
             $greenwalk->removeParticipant($user);
-            /* Envoie de mail dans le cas ou un utilisateur se désinscrit à une greenwalk */
-            try {
-                $message = (new \Swift_Message('Annulation de Greenwalk'))
-                    ->setFrom('greenwalk.communication@gmail.com')
-                    ->setTo($user->getEmail())
-                    ->setBody($this->renderView('emails/cancelRegisterGreenwalk.html.twig', [
-                        'greenwalk' => $greenwalk->getName(),
-                        'date' => $greenwalk->getDatetime()->format('Y-m-d'),
-                        'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
-                        'street' => $greenwalk->getStreet(),
-                        'city' => $greenwalk->getCity(),
-                        'zipcode' => $greenwalk->getZipCode()
-                    ]),'text/html');
-                $mailer->send($message);
-            } catch (\Exception $e) {
-                var_dump($e->getMessage(), $e->getTraceAsString());
-            }
-
-        } else if ($action === "subscribe"){
+            $template = 'emails/cancelRegisterGreenwalk.html.twig';
+        } else {
             $greenwalk->addParticipant($user);
-            /* Envoie de mail dans le cas ou un utilisateur s'inscrit à une greenwalk */
-            try {
-                $message = (new \Swift_Message('Participation à un GreenWalk'))
-                    ->setFrom('greenwalk.communication@gmail.com')
-                    ->setTo($user->getEmail())
-                    ->setBody($this->renderView('emails/validationRegisterGreenwalk.html.twig', [
-                        'greenwalk' => $greenwalk->getName(),
-                        'date' => $greenwalk->getDatetime()->format('Y-m-d'),
-                        'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
-                        'street' => $greenwalk->getStreet(),
-                        'city' => $greenwalk->getCity(),
-                        'zipcode' => $greenwalk->getZipCode()
-                    ]),
-                        'text/html');
-
-                $mailer->send($message);
-            } catch (\Exception $e) {
-                var_dump($e->getMessage(), $e->getTraceAsString());
-            }
+           $template = 'emails/validationRegisterGreenwalk.html.twig';
         }
 
-        $entityManager->persist($greenwalk);
-        $entityManager->flush();
+        try {
+            $message = (new \Swift_Message('Annulation de Greenwalk'))
+                ->setFrom('greenwalk.communication@gmail.com')
+                ->setTo($user->getEmail())
+                ->setBody($this->renderView($template, [
+                    'greenwalk' => $greenwalk->getName(),
+                    'date' => $greenwalk->getDatetime()->format('Y-m-d'),
+                    'hour' => str_replace('-','h',$greenwalk->getDatetime()->format('H-i')).'min',
+                    'street' => $greenwalk->getStreet(),
+                    'city' => $greenwalk->getCity(),
+                    'zipcode' => $greenwalk->getZipCode()
+                ]),'text/html');
 
-        return APIREST::onSuccess(true);
+            $mailer->send($message);
+
+            $entityManager->persist($greenwalk);
+            $entityManager->flush();
+
+            return APIREST::onSuccess(true);
+        } catch (\Exception $e) {
+            return APIREST::onError($e->getMessage());
+        }
+
     }
 
     /**
