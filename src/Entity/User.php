@@ -22,11 +22,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class User implements UserInterface
 {
     /**
-     * @Groups({"user"})
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
+     * @Groups({"user", "greenWalk"})
      */
     private $id;
 
@@ -35,7 +35,6 @@ class User implements UserInterface
      * @Assert\NotBlank
      * @Assert\Email
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"greenWalk"})
      */
     private $email;
 
