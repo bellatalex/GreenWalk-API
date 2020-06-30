@@ -66,11 +66,16 @@ class GreenwalkController extends AbstractFOSRestController
      * @param EntityManagerInterface $entityManager
      * @return View
      */
-    public function delete(Greenwalk $greenwalk, EntityManagerInterface $entityManager)
+    public function delete(Greenwalk $greenwalk, EntityManagerInterface $entityManager, SecurityController $securityController)
     {
-        $entityManager->remove($greenwalk);
-        $entityManager->flush();
-        return APIREST::onSuccess([true]);
+        if ($securityController->isGranted('ROLE_ADMIN') || $this->getUser() === $greenwalk->getAuthor()) {
+            $greenwalk->setState(false);
+            $entityManager->persist($greenwalk);
+            $entityManager->flush();
+            return APIREST::onSuccess([true]);
+        } else {
+            return APIREST::onError('bad user to delete greenwalk');
+        }
     }
 
     /**
