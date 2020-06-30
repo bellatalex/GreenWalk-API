@@ -5,7 +5,7 @@ namespace App\Services;
 
 
 use FOS\RestBundle\View\View;
-use Symfony\Component\Form\FormErrorIterator;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,30 +35,36 @@ class APIREST
         $form->submit($request->request->all(), false);
 
         if (!$form->isValid()) {
-            return APIREST::errorForm($form->getErrors(true, true));
+            return APIREST::errorForm($form);
         }
 
         return null;
     }
 
     /**
-     * @param FormErrorIterator $errorIterator
+     * @param Form $form
      * @return View
      */
-    public static function errorForm(FormErrorIterator $errorIterator): View
+    public static function errorForm(FormInterface $form)
     {
         $errors = [];
 
-        foreach ($errorIterator as $error) {
-            $errors[] = $error->getMessage();
+        foreach ($form as $child) {
+            if (!$child->isSubmitted() || !$child->isValid()) {
+
+                $iterator = $child->getErrors(true, false);
+
+                foreach ($iterator as $error) {
+                    $errors[$child->getName()][] = $error->getMessage();
+                }
+            }
         }
 
-        return self::onError($errors);
+        return $errors ? self::onError($errors) : null;
     }
 
     /**
-     * @param null $message
-     * @param $errors
+     * @param $messages
      * @param int $httpErrorCode
      * @return View
      */
