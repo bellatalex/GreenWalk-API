@@ -90,7 +90,7 @@ class SecurityController extends AbstractFOSRestController
         $entityManager->flush();
 
         try {
-            $message = (new \Swift_Message('Create Account'))
+            $message = (new \Swift_Message('Création d\'un compte'))
                 ->setFrom('greenwalk.communication@gmail.com')
                 ->setTo($user->getEmail())
                 ->setBody($this->renderView('emails/accountActivation.html.twig'),
