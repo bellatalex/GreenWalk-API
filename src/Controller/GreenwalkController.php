@@ -89,9 +89,6 @@ class GreenwalkController extends AbstractFOSRestController
             ];
             $mailService->mail('Annulation de GreenWalk',$allEmail,'emails/cancelRegisterGreenwalk.html.twig',$content,'cc');
 
-            $entityManager->persist($greenwalk);
-            $entityManager->flush();
-
             return APIREST::onSuccess(true);
 
         } else {
