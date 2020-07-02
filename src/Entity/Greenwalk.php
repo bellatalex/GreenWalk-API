@@ -234,10 +234,15 @@ class Greenwalk
     /**
      * @return Collection|User[]
      */
+
+    // function that returns every participant
+
     public function getParticipants(): Collection
     {
         return $this->participants;
     }
+
+    // function that add a participant
 
     public function addParticipant(User $participant): self
     {
@@ -247,6 +252,8 @@ class Greenwalk
 
         return $this;
     }
+
+    // function that remove a participant
 
     public function removeParticipant(User $participant): self
     {

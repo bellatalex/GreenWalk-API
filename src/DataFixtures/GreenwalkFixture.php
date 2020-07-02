@@ -23,6 +23,8 @@ class GreenwalkFixture extends Fixture implements DependentFixtureInterface
         $this->userRepository = $userRepository;
     }
 
+    // load GreenWalk fixtures
+
     public function load(ObjectManager $manager)
     {
         $faker = Factory::create('fr_FR');

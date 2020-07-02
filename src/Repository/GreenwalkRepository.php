@@ -20,6 +20,8 @@ class GreenwalkRepository extends ServiceEntityRepository
         parent::__construct($registry, Greenwalk::class);
     }
 
+    // Find the location of the GreenWalk by coordinates
+
     public function findAllByCoordinate ($latitude, $longitude): array
     {
         $sql = '
@@ -28,7 +30,8 @@ class GreenwalkRepository extends ServiceEntityRepository
             POW(69.1 * (:longitude - longitude) * COS(latitude / 57.3), 2)
           ) AS distance
         FROM greenwalk g
-        WHERE g.`datetime` > CURDATE()
+        WHERE g.`datetime` > NOW()
+        AND state = 1
         ORDER BY distance
         ';
 

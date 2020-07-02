@@ -269,10 +269,15 @@ class User implements UserInterface
     /**
      * @return Collection|Greenwalk[]
      */
+
+    // function that returns every GreenWalk registered
+
     public function getRegisteredGreenWalks(): Collection
     {
         return $this->registeredGreenWalks;
     }
+
+    // function that add a participant in a GreenWalk
 
     public function addRegisteredGreenWalk(Greenwalk $registeredGreenWalk): self
     {
@@ -283,6 +288,8 @@ class User implements UserInterface
 
         return $this;
     }
+
+    // function that delete a participant in a GreenWalk
 
     public function removeRegisteredGreenWalk(Greenwalk $registeredGreenWalk): self
     {
