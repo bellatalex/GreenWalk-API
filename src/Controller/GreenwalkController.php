@@ -32,7 +32,13 @@ class GreenwalkController extends AbstractFOSRestController
      */
     public function getGreenwalksByUser(): View
     {
-        return APIREST::onSuccess($this->getUser()->getRegisteredGreenWalks());
+        $greenWalks = [];
+        foreach ($this->getUser()->getRegisteredGreenWalks() as $greenWalk) {
+            if ($greenWalk->getState()){
+                $greenWalks[] = $greenWalk;
+            }
+        }
+        return APIREST::onSuccess($greenWalks);
     }
 
     /**
